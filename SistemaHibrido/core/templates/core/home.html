@@ -1,0 +1,69 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% if user.is_authenticated %}
+{% block contentauth %}
+{% if messages%}
+    {% for message in messages %}
+        <div class="alert {{message.tags}}">
+            {{ message }}        
+        </div>
+    {% endfor %}
+{% endif %}
+<div style="margin-top: 46px">
+    <h2>Seja bem vindo, {{ user }}</h2>
+    <div class="w3-row-padding w3-margin-bottom">
+        <div class="w3-quarter">
+            <div class="w3-container w3-padding-16 w3-yellow">
+                <div class="w3-left"><i class="fa fa-address-card w3-xxxlarge"></i></div>
+                    <div class="w3-right">
+                        <h3>{{ creports }}</h3>
+                    </div>
+                <div class="w3-clear"></div>
+                <h4>Relatórios Processados</h4>
+            </div>
+        </div>
+        <div class="w3-quarter">
+            <div class="w3-container w3-padding-16 w3-light-green">
+                <div class="w3-left"><i class="fa fa-user-check w3-xxxlarge"></i></div>
+                    <div class="w3-right">
+                        <h3>{{ cativ }}</h3>
+                    </div>
+                <div class="w3-clear"></div>
+                <h4>Ativos</h4>
+            </div>
+        </div>
+        <div class="w3-quarter">
+            <div class="w3-container w3-padding-16 w3-red">
+                <div class="w3-left"><i class="fa fa-user-check w3-xxxlarge"></i></div>
+                    <div class="w3-right">
+                        <h3>{{ cnativ }}</h3>
+                    </div>
+                <div class="w3-clear"></div>
+                <h4>Não Ativos</h4>
+            </div>
+        </div>
+        <div class="w3-quarter">
+            <div class="w3-container w3-padding-16 w3-blue">
+                <div class="w3-left"><i class="fa fa-chart-bar w3-xxxlarge"></i></div>
+                    <div class="w3-right">
+                        <h3>{{ cgraphs }}</h3>
+                    </div>
+                <div class="w3-clear"></div>
+                <h4>Gráficos Gerados</h4>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(".alert").delay(4000).slideUp(200, function() {
+        $(this).alert('close');
+    });
+</script>
+{% endblock %}
+{% else %}
+{% block contentun %}
+    <h3>Você não está logado, <a href="{% url 'logout' %}">clique aqui</a> para logar</h3>
+{% endblock %}
+{% endif %}
+

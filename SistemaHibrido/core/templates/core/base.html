@@ -1,0 +1,124 @@
+{% load static %}
+{% load auth_extras %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+        <title>Acompanhamento NEaD/UNICENTRO</title>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <link rel="shortcut icon" href="{% static 'users/logo_nead.png' %}" />
+        <link rel="stylesheet" href="{% static 'users/login.css' %}">
+        <link rel="stylesheet" href="{% static 'core/base.css' %}">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="{% static 'core/fontawesome/css/all.css' %}">   
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    </head>
+    <body>
+        {% if user.is_authenticated %}
+        <!-- Top container -->
+        <div class="w3-bar w3-top cor-cima w3-large texto-branco" style="z-index:4">
+            <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i></button>
+            <span class="w3-bar-item w3-right"> Acompanhamento <img src="{% static 'users/logo_nead.png' %}" style="width:40px;padding-left:10px;">
+                <a class="w3-bar-item w3-button" href="{% url 'home' %}"></a></img>
+            </span>
+        </div>
+        <!-- Sidebar/menu -->
+        <nav class="w3-sidebar w3-collapse cor-barra" style="z-index:3;width:250px;" id="mySidebar"><br>
+            <aside class="sidebar">
+            <div class="w3-container">
+            <div class="w3-container w3-row">
+                <div class="w3-col s4"><i class="fa fa-user w3-xxxlarge"></i></div>
+                <div class="w3-col s8 w3-bar">
+                    <span>Bem Vindo, 
+                        <strong>
+                            <a class="link-barra w3-bar-item" href="{% url 'logout' %}">{{ user }}  <i class="fa fa-sign-out-alt"></i></a>
+                        </strong>
+                    </span><br>
+                </div>
+            </div>
+            <br>
+            <h5>Meu Painel</h5>
+        </div class="sidenav">
+            <div id="links" class="w3-bar-block">
+            <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Fechar Menu</a>
+            <a class="link-barra w3-bar-item w3-button" href="{% url 'home' %}">
+            <i class="fa fa-home"></i>  Página Inicial </a>
+            {% if request.user|has_group:"admin" %}
+                <button class="dropdown-btn w3-bar-item"><i class="fa fa-users"></i>  Gerenciar Usuários  <i class="fa fa-caret-down"></i> </button>
+                <div class="dropdown-container">
+                    <a class="link-barra w3-bar-item w3-button" href="/register"><i class="fa fa-user-plus"></i>  Registrar Usuário </a>
+                    <a class="link-barra w3-bar-item w3-button" href="/register/delete"><i class="fa fa-user-times"></i>  Deletar Usuário </a>                
+                </div>
+            {% endif %}
+            {% if request.user|has_group:"coordenador" %}
+            <button class="dropdown-btn w3-bar-item"><i class="fa fa-chart-bar"></i>  Gráficos <i class="fa fa-caret-down"></i> </button>
+                <div class="dropdown-container">
+                    <a class="link-barra w3-bar-item w3-button" href="/canvas"><i class="fa fa-chart-line"></i>  Gráfico de Cursos </a>   
+                    <a class="link-barra w3-bar-item w3-button" href="/canvas/acompanhar"><i class="fa fa-chart-bar"></i>  Gráfico de Acompanhamento </a>             
+                    <!-- <a class="link-barra w3-bar-item w3-button" href="/canvas/motivos"><i class="fa fa-chart-pie"></i>  Gráfico de Motivos de Desistência </a>               -->
+                </div>
+            {% endif %}
+            <button class="dropdown-btn w3-bar-item"><i class="fa fa-users"></i>  Visualizar Relatórios  <i class="fa fa-caret-down"></i> </button>
+                <div class="dropdown-container">
+                    <a class="link-barra w3-bar-item w3-button" href="/canvas/model"><i class="fa fa-user-check"></i>  Previsões e Rótulos dos Alunos </a>
+                    <a class="link-barra w3-bar-item w3-button" href="/canvas/selecionar"><i class="fa fa-user-clock"></i>  Criar Previsão </a>   
+                </div>
+        </div>
+        </aside>
+        </nav>
+        <!-- Overlay effect when opening sidebar on small screens--> 
+        <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+        <!-- !PAGE CONTENT! -->
+        <div class="home w3-main" style="margin-left:250px;margin-top:43px;margin-right:4px;position: relative;" id="pagina">
+            {% block contentauth %}
+            {% endblock %}
+        </div>
+        {% else %}
+        <div class="home" id="pagina">
+            {% block contentun %}
+            {% endblock %}
+        </div>
+        {% endif %}
+        <script>
+            // Get the Sidebar
+            var mySidebar = document.getElementById("mySidebar");
+            
+            // Get the DIV with overlay effect
+            var overlayBg = document.getElementById("myOverlay");
+            
+            // Toggle between showing and hiding the sidebar, and add overlay effect
+            function w3_open() {
+                if (mySidebar.style.display === 'block') {
+                    mySidebar.style.display = 'none';
+                    overlayBg.style.display = "none";
+                } else {
+                    mySidebar.style.display = 'block';
+                    overlayBg.style.display = "block";
+                }
+            }
+            
+            // Close the sidebar with the close button
+            function w3_close() {
+                mySidebar.style.display = "none";
+                overlayBg.style.display = "none";
+            }
+            //* Loop through all dropdown buttons to toggle between hiding and showing its dropdown content - This allows the user to have multiple dropdowns without any conflict */
+            var dropdown = document.getElementsByClassName("dropdown-btn");
+            var i;
+
+            for (i = 0; i < dropdown.length; i++) {
+            dropdown[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var dropdownContent = this.nextElementSibling;
+                if (dropdownContent.style.display === "block") {
+                dropdownContent.style.display = "none";
+                } else {
+                dropdownContent.style.display = "block";
+                }
+            });
+            }
+        </script>
+    </body>
+</html>

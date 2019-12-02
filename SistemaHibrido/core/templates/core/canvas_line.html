@@ -1,0 +1,119 @@
+{% load static %}
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Acompanhamento NEaD/UNICENTRO</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="shortcut icon" href="{% static 'users/logo_nead.png' %}" />
+    <link rel="stylesheet" href="{% static 'users/login.css' %}">
+    <link rel="stylesheet" href="{% static 'core/base.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script src="https://kit.fontawesome.com/aec23b4fb0.js"></script>    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+{% if user.is_authenticated %}
+    <script src="{% static 'core/js/chart.js/dist/Chart.js' %}"></script>
+    <script src="{% static 'core/js/file-saver/dist/FileSaver.js' %}"></script>
+    <script src="{% static 'core/js/file-saver/dist/canvas-toBlob.js' %}"></script>
+    <div class="baixar-grafico">
+        <button type="button" id="download-png" class="btn btn-primary">
+            <i class="fa fa-download"></i> Baixar Gráfico
+        </button>
+    </div>
+    <br>
+    <canvas id="neadChart" width="400" height="200"></canvas>
+    <script>
+    Chart.plugins.register({
+    beforeDraw: function(c) {
+        var ctx = c.chart.ctx;
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, c.chart.width, c.chart.height);
+    }
+    })
+    var ctx = document.getElementById('neadChart').getContext('2d');
+    var data_aluno = JSON.parse('{{ data_aluno|safe }}');
+    var data_professor = JSON.parse('{{ data_professor|safe }}');
+    var data_tutor = JSON.parse('{{ data_tutor|safe }}');
+    data_aluno = Object.values(data_aluno);
+    data_professor = Object.values(data_professor);
+    data_tutor = Object.values(data_tutor);
+    var label = JSON.parse('{{ label|safe }}');
+    label = Object.values(label);
+    console.log(data_aluno)
+    console.log(label)
+    chart_data = {
+    type: 'line',
+    data: {
+        labels: label,
+        datasets: [{
+            label: 'Alunos',
+            fill: false,
+            data: data_aluno,
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1
+        },
+        {
+            label: 'Professores',
+            fill: false,
+            data: data_professor,
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        },
+        {
+            label: 'Tutores',
+            fill: false,
+            data: data_tutor,
+            backgroundColor: 'rgba(0, 168, 107, 0.5)',
+            borderColor: 'rgba(0, 168, 107, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        title: {
+            display:true,
+            text: "{{ estatisitica }} de acessos a página inicial da disciplina {{ disciplina }}, por {{ tipo }}"
+        },
+        scales: {
+            yAxes: [{
+                display: true,
+                scaleLabel: {
+                    display: true,
+                    labelString: "{{ estatisitica }}"
+                },
+                ticks: {
+                    beginAtZero: true
+                }
+            }],
+            xAxes: [{
+                display: true,
+                scaleLabel: {
+                    display: true,
+                    labelString: "{{ tipo }}"
+                },
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+}
+
+var myChart = new Chart(ctx,chart_data);
+
+document.getElementById('download-png').addEventListener("click", downloadPNG);
+
+function downloadPNG() {
+    a = document.querySelector('#neadChart')
+    a.toBlob(function(blob) {
+      saveAs(blob,"{{ disciplina }}_{{ estatisitica }}_{{ tipo }}"+".png")
+  })
+ }
+</script>
+{% else %}
+    <h3>Você não está logado, <a href="{% url 'logout' %}">clique aqui</a> para logar</h3>
+{% endif %}
+</body>

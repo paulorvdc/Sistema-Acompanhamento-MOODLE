@@ -1,0 +1,121 @@
+{% load static %}
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Acompanhamento NEaD/UNICENTRO</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="shortcut icon" href="{% static 'users/logo_nead.png' %}" />
+    <link rel="stylesheet" href="{% static 'users/login.css' %}">
+    <link rel="stylesheet" href="{% static 'core/base.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script src="https://kit.fontawesome.com/aec23b4fb0.js"></script>    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+    {% if user.is_authenticated %}
+    <script src="{% static 'core/js/chart.js/dist/Chart.js' %}"></script>
+    <script src="{% static 'core/js/file-saver/dist/FileSaver.js' %}"></script>
+    <script src="{% static 'core/js/file-saver/dist/canvas-toBlob.js' %}"></script>
+    <div class="baixar-grafico">
+        <button type="button" id="download-png" class="btn btn-primary">
+            <i class="fa fa-download"></i> Baixar Gráfico
+        </button>
+    </div>
+    <br>
+    <canvas id="neadChart" width="400" height="200"></canvas>
+    <script>
+    Chart.plugins.register({
+    beforeDraw: function(c) {
+        var ctx = c.chart.ctx;
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, c.chart.width, c.chart.height);
+    }
+    })
+    var ctx = document.getElementById('neadChart').getContext('2d');
+    var sem = JSON.parse('{{ sem|safe }}');
+    var inter = JSON.parse('{{ inter|safe }}');
+    var alto = JSON.parse('{{ alto|safe }}');
+    sem = Object.values(sem);
+    inter = Object.values(inter);
+    alto = Object.values(alto);
+    var label = JSON.parse('{{ label|safe }}');
+    label = Object.values(label);
+    console.log(sem)
+    console.log(inter)
+    console.log(alto)
+    console.log(label)
+    chart_data = {
+    type: 'line',
+    data: {
+        labels: label,
+        datasets: [{
+            label: 'Sem Risco',
+            fill: false,
+            data: sem,
+            backgroundColor: 'rgba(0, 168, 107, 0.5)',
+            borderColor: 'rgba(0, 168, 107, 1)',
+            borderWidth: 1
+        },
+        {
+            label: 'Risco Intermediário',
+            fill: false,
+            data: inter,
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        },
+        {
+            label: 'Alto Risco',
+            fill: false,
+            data: alto,
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        title: {
+            display:true,
+            text: "Quantidade de alunos em Sem Risco, Risco Intermediário, Alto Risco do curso {{ curso }}"
+        },
+        scales: {
+            yAxes: [{
+                display: true,
+                scaleLabel: {
+                    display: true,
+                    labelString: "Quantidade"
+                },
+                ticks: {
+                    beginAtZero: true
+                }
+            }],
+            xAxes: [{
+                display: true,
+                scaleLabel: {
+                    display: true,
+                    labelString: "Datas"
+                },
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+}
+
+var myChart = new Chart(ctx,chart_data);
+
+document.getElementById('download-png').addEventListener("click", downloadPNG);
+
+function downloadPNG() {
+    a = document.querySelector('#neadChart')
+    a.toBlob(function(blob) {
+      saveAs(blob,"Acompanhamento_{{ curso }}_"+ Date() +".png")
+  })
+ }
+</script>
+{% else %}
+    <h3>Você não está logado, <a href="{% url 'logout' %}">clique aqui</a> para logar</h3>
+{% endif %}
+</body>

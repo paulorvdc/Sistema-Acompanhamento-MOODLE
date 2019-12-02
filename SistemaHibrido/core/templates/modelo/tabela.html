@@ -1,0 +1,92 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% if user.is_authenticated %}
+{% block contentauth %}
+
+{% if messages%}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }}" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="save" value="1">
+    <input type="hidden" value="{{ course }}" name="course">
+    <input type="hidden" value="{{ datestart }}" name="datestart">
+    <input type="hidden" value="{{ datefinish }}" name="datefinish">
+    <input type="hidden" name="fullname" value="{{ fullname }}">
+    <button type="submit" class="btn btn-primary"><i class="fa fa-download"></i> Baixar CSV da Tabela Completa</button>
+</form>
+<br>
+<h4>Classificação dos Alunos da Disciplina, {{ fullname }}</h4>
+    <table class="table">
+        <tr>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="pesquisar" value="1">
+                <input type="hidden" value="{{ course }}" name="course">
+                <input type="hidden" value="{{ datestart }}" name="datestart">
+                <input type="hidden" value="{{ datefinish }}" name="datefinish">
+                <input type="hidden" name="fullname" value="{{ fullname }}">
+                <th>                 
+                    <label for="id_nome">Nome Completo</label>              
+                    <input type="text" class="form-control" name="nome" placeholder="Digite o nome a ser pesquisado" id="id_nome">
+                </th>
+                <th>
+                    <label for="id_classificacao">Classificação</label>
+                    <input type="text" class="form-control" name="classificacao" placeholder="Digite a classificação ser pesquisada" id="id_classificacao"> 
+                </th>
+                <th>
+                    <label for="id_acoes">Ações</label>
+                    <br>
+                    <button id="id_acoes" type="submit" class="btn btn-outline-primary"><i class="fa fa-search"></i></button>
+                </th>
+            </form>
+        </tr>
+    {% for user in data %}
+        <tr>
+            <td>{{ user.4 }}</td>
+            <td>{{ user.3 }}</td>
+            <td>
+                <div>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="rotular" value="1">
+                        <input type="hidden" value="{{ user.0 }}" name="n_ativo">
+                        <input type="hidden" value="{{ course }}" name="course">
+                        <input type="hidden" value="{{ datestart }}" name="datestart">
+                        <input type="hidden" value="{{ datefinish }}" name="datefinish">
+                        <input type="hidden" name="fullname" value="{{ fullname }}">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Quer mesmo marcar {{ user.4 }} como Não Ativo(a)?')">Não Ativo(a)</button> 
+                    </form> 
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="rotular" value="1">
+                        <input type="hidden" value="{{ user.0 }}" name="ativo">
+                        <input type="hidden" value="{{ course }}" name="course">
+                        <input type="hidden" value="{{ datestart }}" name="datestart">
+                        <input type="hidden" value="{{ datefinish }}" name="datefinish">
+                        <input type="hidden" name="fullname" value="{{ fullname }}">
+                        <button type="submit" class="btn btn-success" onclick="return confirm('Quer mesmo marcar {{ user.4 }} como Ativo(a)?')">Ativo(a)</button>
+                    </form> 
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    <script>
+        $(".alert").delay(4000).slideUp(200, function() {
+            $(this).alert('close');
+        });
+    </script>
+{% endblock %}
+{% else %}
+{% block contentun %}
+    <h3>Você não está logado, <a href="{% url 'logout' %}">clique aqui</a> para logar</h3>
+{% endblock %}
+{% endif %}
+

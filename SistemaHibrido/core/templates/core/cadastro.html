@@ -1,0 +1,68 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% if user.is_authenticated %}
+{% block contentauth %}
+    {% if messages%}
+        {% for message in messages %}
+            <div class="alert {{message.tags}}">
+                {{ message }}        
+            </div>
+        {% endfor %}
+    {% endif %}
+    <table style="width: 100%">
+        <tr>
+            <th>
+                <h4>Seleção de disciplina e faixa de tempo para geração da previsão</h4>
+                <form method="POST" id="courseForm" data-categories-url="{% url 'ajax_load_categories' %}" novalidate>
+                    {% csrf_token %}
+                    <label for="id_parent">Escolha o tipo de curso</label>
+                    <select name="parent" required id="id_parent" class="form-control selecao">
+                        <option></option>
+                        {% for parent in parents %}
+                            <option value="{{ parent.0 }}">
+                            {{ parent.1 }}
+                            </option>
+                        {% endfor%}
+                    </select>
+                    
+                    <label for="id_category">Escolha o curso</label>
+                    <select name="category" required id="id_category" class="form-control selecao">
+                        <option></option>
+                    </select>
+
+                    <label for="date_start">Escolha a data de inicio</label>
+                    <input id="date_start" name="datestart" type="date" required class="form-control date-time-mask" onchange="checkDate('date_start')">
+                    <label for="date_finish">Escolha a data final</label>
+                    <input id="date_finish" type="date" name="datefinish" required class="form-control date-time-mask" onchange="checkDate('date_finish')">
+                    <br>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </form>
+            </th>
+        </tr>
+    </table>    
+    <script>
+        $(".alert").delay(4000).slideUp(200, function() {
+            $(this).alert('close');
+        });
+        $("#id_parent").change(function () {
+        var url = $("#courseForm").attr("data-categories-url");  
+        var parentId = $(this).val();  
+
+        $.ajax({                      
+            url: url,                   
+            data: {
+            'parent': parentId       
+            },
+            success: function (data) {   
+            $("#id_category").html(data);  
+            }
+        });
+        });
+    </script>
+{% endblock %}
+{% else %}
+{% block contentun %}
+    <h3>Você não está logado, <a href="{% url 'logout' %}">clique aqui</a> para logar</h3>
+{% endblock %}
+{% endif %}

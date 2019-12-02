@@ -1,0 +1,43 @@
+{% load static %}
+<html>
+    <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="{% static 'users/login.css' %}">
+        <link rel="stylesheet" href="{% static 'core/base.css' %}">
+        <link rel="shortcut icon" href="{% static 'users/logo_nead.png' %}" />
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <title>Acompanhamento NEaD/UNICENTRO</title>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <div class="w3-bar w3-top cor-cima w3-large" style="z-index:4">
+            <span class="w3-bar-item w3-right texto-branco"> Acompanhamento <img src="{% static 'users/logo_nead.png' %}" style="width:40px;padding-left:10px;"></img></span>
+        </div>
+        <div class="login">
+            <h4>Login</h4>
+            <br>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_username">Usuário</label>
+                    <input type="text" class="form-control" id="id_username" name="username" placeholder="Digite o Usuário" required> 
+                </div>
+                <div class="form-group">
+                    <label for="id_password">Senha</label>
+                    <input type="password" name="password" class="form-control" id="id_password" placeholder="Digite a Senha" required>
+                </div>
+                {% if messages%}
+                    {% for message in messages %}
+                        <div style="color: red;">
+                            {{ message }}        
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <br>
+                <button type="submit" class="btn btn-primary">Enviar</button>
+            </form>
+            <a href="register/password_reset/">Esqueceu a senha? Clique aqui!</a>
+        </div>
+    </body>
+</html>

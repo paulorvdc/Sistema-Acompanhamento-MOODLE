@@ -1,0 +1,62 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% if user.is_authenticated %}
+{% block contentauth %}
+<form method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="save" value="1">
+    <input type="hidden" name="rotular" value="0">
+    <button type="submit" class="btn btn-primary"><i class="fa fa-download"></i> Baixar CSV da Tabela Completa</button>
+</form>
+<br>
+<h4>Classificação dos Alunos</h4>
+    <table class="table">
+        <tr>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="deletar" value="0">
+                <input type="hidden" name="save" value="0">
+                <th>                 
+                    <label for="id_nome">Nome Completo</label>              
+                    <input type="text" class="form-control" name="nome" placeholder="Digite o nome a ser pesquisado" id="id_nome">
+                </th>
+                <th>                 
+                    <label for="id_curso">Curso</label>              
+                    <input type="text" class="form-control" name="curso" placeholder="Digite o curso a ser pesquisado" id="id_curso">
+                </th>
+                <th>
+                    <label for="id_rotulo">Rótulo</label>
+                    <input type="text" class="form-control" name="rotulo" placeholder="Digite o rótulo a ser pesquisado" id="id_rotulo"> 
+                </th>
+                <th>
+                    <label for="id_acao">Retirar rótulo</label>
+                    <br>
+                    <button id="id_acao" type="submit" class="btn btn-outline-primary"><i class="fa fa-search"></i></button>
+                </th>
+            </form>
+        </tr>
+    {% for user in data %}
+        <tr>
+            <td>{{ user.0 }}</td>
+            <td>{{ user.1 }}</td>
+            <td>{{ user.2 }}</td>
+            <td>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="save" value="0">
+                    <input type="hidden" name="deletar" value="1">
+                    <input type="hidden" value="{{ user.3 }}" name="rotulado">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Quer mesmo deletar esse rótulo?')"><i class="fa fa-times"></i></button> 
+                </form> 
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}
+{% else %}
+{% block contentun %}
+    <h3>Você não está logado, <a href="{% url 'logout' %}">clique aqui</a> para logar</h3>
+{% endblock %}
+{% endif %}
+
