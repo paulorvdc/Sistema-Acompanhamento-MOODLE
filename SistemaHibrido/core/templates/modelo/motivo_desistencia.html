@@ -1,0 +1,66 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% if user.is_authenticated %}
+{% block contentauth %}
+    {% if messages%}
+        {% for message in messages %}
+            <div class="alert {{message.tags}}">
+                {{ message }}        
+            </div>
+        {% endfor %}
+    {% endif %}
+    <h4>Marque aqui o motivo da desistencia do aluno {{ aluno }}</h4>
+    <form method="POST" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="motivo" value="1">
+        <input type="hidden" name="save" value="0">
+        <input type="hidden" value="{{ desistente }}" name="desistente">
+        <br>
+        <div style="display: inline-block; text-align: left;">
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="id_pessoais" name="motivoaluno" value="Motivos Pessoais">
+                <label class="custom-control-label" for="id_pessoais">Motivos Pessoais</label>
+            </div>
+            
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="id_curso" name="motivoaluno" value="Não Gostou do Curso">
+                <label class="custom-control-label" for="id_curso">Não Gostou do Curso</label>
+            </div>
+
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="id_dificuldade" name="motivoaluno" value="Dificuldades com o Curso">
+                <label class="custom-control-label" for="id_dificuldade">Dificuldades com o Curso</label>
+            </div>
+            
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="id_tutor" name="motivoaluno" value="Problemas com o Tutor">
+                <label class="custom-control-label" for="id_tutor">Problemas com o Tutor</label>
+            </div>
+
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="id_professor" name="motivoaluno" value="Problemas com o Professor" >
+                <label class="custom-control-label" for="id_professor">Problemas com o Professor</label>
+            </div>
+
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" id="id_outros" name="motivoaluno" checked value="Outros">
+                <label class="custom-control-label" for="id_outros">Outros</label>
+            </div>
+        </div>
+        <br><br>
+        <button type="submit" class="btn btn-primary" onclick="return confirm('Quer mesmo aplicar esse rótulo, com esse motivo?')">Enviar</button>
+    </form>
+    <br>
+    <a class="btn btn-secondary" href="/canvas/model">Cancelar</a>
+    <script>
+        $(".alert").delay(4000).slideUp(200, function() {
+            $(this).alert('close');
+        });
+    </script>
+{% endblock %}
+{% else %}
+{% block contentun %}
+    <h3>Você não está logado, <a href="{% url 'logout' %}">clique aqui</a> para logar</h3>
+{% endblock %}
+{% endif %}

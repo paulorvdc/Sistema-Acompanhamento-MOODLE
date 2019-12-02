@@ -1,0 +1,76 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% if user.is_authenticated %}
+{% block contentauth %}
+    <div class="register">
+        <h4>Cadastro</h4>
+        <br>
+        <form name="register" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">Usuário</label>
+                <input type="text" class="form-control" name="username" maxlength="150" placeholder="Digite o Usuário" required id="id_username">
+                <span class="small">No máximo de 150 caracteres alfanuméricos</span>
+            </div>
+            <div class="form-group">
+                <label for="id_email">e-mail</label>
+                <input type="email" class="form-control" name="email" required id="id_email" placeholder="Digite o e-mail">
+            </div>
+            <div class="form-group">
+                <label for="id_password1">Senha</label>
+                <input type="password" class="form-control" name="password1" required id="id_password1" placeholder="Digite a Senha">
+                <span class="small">
+                    A senha não pode ser muito parecida com suas informações pessoais<br>
+                    A senha precisa conter pelo menos 8 caracteres<br>
+                    A senha não pode ser comumente usada<br>
+                    A senha não pode conter somente números
+                </span>
+            </div>
+            <div class="form-group">
+                <label for="id_password2">Confirmar a Senha</label>
+                <input type="password" class="form-control" name="password2" required id="id_password2" placeholder="Confirme a Senha">
+            </div>
+             <p>
+            {% for field in form %}
+            {% for error in field.errors %}
+            <p style="color: red">{{ error }}</p>
+            {% endfor %}
+            {% endfor %}
+            </p>
+	    <label>Tipo de Acesso</label>
+	    <div class="form-check form-check-inline">
+                <select id="id_tipo" name="tipo" class="form-control">
+		  <option></option>
+                  <option value="isAdm">Administrador</option>
+		  <option value="isCor">Coordenador</option>
+                  <option value="isUser">Usuário</option>
+                </select>
+	    </div>
+            <br><br>
+            <button type="submit" class="btn btn-primary">Cadastrar</button>
+        </form>
+
+        {% comment %} <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <p>
+        {{ field.label_tag }}<br>
+        {{ field }}
+        {% if field.help_text %}
+          <small style="color: grey">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+          <p style="color: red">{{ error }}</p>
+        {% endfor %}
+      </p>
+    {% endfor %}
+    <button type="submit">Sign up</button>
+  </form> {% endcomment %}
+    </div>
+{% endblock %}
+{% else %}
+{% block contentun %}
+    <h3>Você não está logado, <a href="{% url 'logout' %}">clique aqui</a> para logar</h3>
+{% endblock %}
+{% endif %}

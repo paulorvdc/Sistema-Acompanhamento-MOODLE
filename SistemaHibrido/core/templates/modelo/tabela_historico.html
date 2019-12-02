@@ -1,0 +1,85 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% if user.is_authenticated %}
+{% block contentauth %}
+
+{% if messages%}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<h4>Disciplinas com relatórios gerados</h4>
+    <table class="table">
+        <tr>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="pesquisar_historico" value="1">
+                <th>                 
+                    <label for="id_nome">Disciplina</label>              
+                    <input type="text" class="form-control" name="nome" placeholder="Digite o nome a ser pesquisado" id="id_nome">
+                </th>
+                <th>                 
+                    <label for="id_curso">Curso</label>              
+                    <input type="text" class="form-control" name="curso" placeholder="Digite o curso a ser pesquisado" id="id_curso">
+                </th>
+                <th>
+                    <label for="id_classificacao">Período do Relatório</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" name="inicial" placeholder="Digite a data inicial a ser pesquisada" id="id_inicial">
+                        <input type="text" class="form-control" name="final" placeholder="Digite a data final a ser pesquisada" id="id_final">
+                    </div>
+                </th>
+                <th>
+                    <label for="id_acoes">Ações</label>
+                    <br>
+                    <button id="id_acoes" type="submit" class="btn btn-outline-primary"><i class="fa fa-search"></i></button>
+                </th>
+            </form>
+        </tr>
+    {% for user in data %}
+        <tr>
+            <td>{{ user.3 }}</td>
+            <td>{{ user.5 }}</td>
+            <td>{{ user.1 }} / {{ user.2 }}</td>
+            <td>
+                <div>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="course" value="{{ user.0 }}">
+                        <input type="hidden" name="datestart" value="{{ user.1 }}">
+                        <input type="hidden" name="datefinish" value="{{ user.2 }}">
+                        <input type="hidden" name="fullname" value="{{ user.3 }}">
+                        <button type="submit" class="btn btn-outline-primary"><i class="fa fa-eye"></i></button>
+                    </form> 
+                </div>
+                <div>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="deletar" value="1">
+                        <input type="hidden" name="course" value="{{ user.0 }}">
+                        <input type="hidden" name="datestart" value="{{ user.1 }}">
+                        <input type="hidden" name="datefinish" value="{{ user.2 }}">
+                        <input type="hidden" name="fullname" value="{{ user.3 }}">
+                        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Quer mesmo deletar esse processamento?')"><i class="fa fa-times"></i></button>
+                    </form> 
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    <script>
+        $(".alert").delay(4000).slideUp(200, function() {
+            $(this).alert('close');
+        });
+    </script>
+{% endblock %}
+{% else %}
+{% block contentun %}
+    <h3>Você não está logado, <a href="{% url 'logout' %}">clique aqui</a> para logar</h3>
+{% endblock %}
+{% endif %}
+

@@ -1,0 +1,35 @@
+.login {
+    margin-top: 123px;
+    margin-left: 25%;
+    margin-right: 25%;
+    align-self: center;
+    align-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.register {
+  margin-left: 25%;
+  margin-right: 25%;
+  align-self: center;
+  align-content: center;
+  align-items: center;
+  text-align: center;
+}
+.header {
+    margin-top: 1%;
+    margin-left: 1%;
+    align-self: left;
+    align-content: left;
+    align-items: left;
+    text-align: left;
+    font-size: 24;
+}
+
+.logo {
+    padding: 1%;
+}
+
+.cor-cima {
+    background-color: #0272f2;
+}

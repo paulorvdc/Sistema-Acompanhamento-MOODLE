@@ -1,0 +1,145 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% if user.is_authenticated %}
+{% block contentauth %}
+    {% if messages%}
+        {% for message in messages %}
+            <div class="alert {{message.tags}}">
+                {{ message }}        
+            </div>
+        {% endfor %}
+    {% endif %}
+    <table style="width: 100%">
+        <tr>
+            <th>
+                <h4>Seleção de disciplina e faixa de tempo para geração da previsão</h4>
+                <form method="POST" id="courseForm" target="blank_" data-categories-url="{% url 'ajax_load_categories' %}" data-courses-url="{% url 'ajax_load_courses' %}" novalidate>
+                    {% csrf_token %}
+                    <label for="id_parent">Escolha o tipo de curso</label>
+                    <select name="parent" required id="id_parent" class="form-control selecao">
+                        <option></option>
+                        {% for parent in parents %}
+                            <option value="{{ parent.0 }}">
+                            {{ parent.1 }}
+                            </option>
+                        {% endfor%}
+                    </select>
+                    
+                    <label for="id_category">Escolha o curso</label>
+                    <select name="category" required id="id_category" class="form-control selecao">
+                        <option></option>
+                    </select>
+                    
+                    <label for="id_course">Escolha a disciplina</label>
+                    <select name="course" required id="id_course" class="form-control selecao">
+                        <option></option>
+                    </select>
+
+                    <label for="date_start">Escolha a data de inicio</label>
+                    <input id="date_start" name="datestart" type="date" required class="form-control date-time-mask" onchange="checkDate('date_start')">
+                    <label for="date_finish">Escolha a data final</label>
+                    <input id="date_finish" type="date" name="datefinish" required class="form-control date-time-mask" onchange="checkDate('date_finish')">
+                    
+                    <label for="id_tipo_grafico">Escolha o tipo do Gráfico</label>
+                    <select name="tipo_grafico" required id="id_tipo_grafico" class="form-control selecao">
+                        <option value="bar">
+                            Barras
+                        </option>
+                        <option value="line">
+                            Linhas
+                        </option>
+                    </select>
+
+                    <label for="id_estatistica">Escolha a estatistíca a ser utilizada</label>
+                    <select name="estatistica" required id="estatistica" class="form-control selecao">
+                        <option value="contagem">
+                            Contagem de acessos
+                        </option>
+                        <option value="proporcao">
+                            Proporção de acessos 
+                        </option>
+                    </select>
+
+                    <label for="id_exibicao">Escolha se os dados serão exibidos dias da semana ou horas do dia</label>
+                    <select name="exibicao" required id="exibicao" class="form-control selecao">
+                        <option value="dias">
+                            Dias da Semana
+                        </option>
+                        <option value="horas">
+                            Horas do Dia
+                        </option>
+                    </select>
+                    <br>
+                    <button type="submit" id="botao_relatorio" class="btn btn-primary" onClick="checkMonth()">Gerar Gráfico</button>
+                </form>
+            </th>
+        </tr>
+    </table>    
+    <script>
+        $(".alert").delay(4000).slideUp(200, function() {
+            $(this).alert('close');
+        });
+        document.getElementById("id_parent").selectedIndex = 0;
+        $("#id_parent").change(function () {
+        var url = $("#courseForm").attr("data-categories-url");  
+        var parentId = $(this).val();  
+
+        $.ajax({                      
+            url: url,                   
+            data: {
+            'parent': parentId       
+            },
+            success: function (data) {   
+            $("#id_category").html(data);  
+            }
+        });
+        });
+        $("#id_category").change(function () {
+        var url = $("#courseForm").attr("data-courses-url");  
+        var category = $(this).val();  
+
+        $.ajax({                      
+            url: url,                   
+            data: {
+            'category': category       
+            },
+            success: function (data) {   
+            $("#id_course").html(data);  
+            }
+        });
+        });
+        document.querySelector("#date_finish").valueAsDate = new Date();
+        function checkDate(element) {
+            var dateString = document.getElementById(element).value;
+            var myDate = new Date(dateString);
+            var today = new Date();
+            if ( myDate > today ) { 
+                alert('Você não pode inserir uma data maior que o dia de hoje!');
+                document.getElementById("botao_relatorio").disabled = true;
+                return false;
+            }
+        document.getElementById("botao_relatorio").disabled = false;
+        return true;
+        }
+
+        function checkMonth() {
+            var dateString = document.getElementById('date_start').value;
+            var dateStringFinal = document.getElementById('date_finish').value;
+            var myDate = new Date(dateString);
+            var myDateFinal = new Date(dateStringFinal);
+            if (myDateFinal.getMonth() - myDate.getMonth() > 3) {
+                alert('O tempo entre as datas é maior que 3 meses, insira um tempo menor.');
+                document.getElementById("botao_relatorio").disabled = true;
+                return false;
+            }
+            document.getElementById("botao_relatorio").disabled = false;
+            return true;
+        }
+    </script>
+{% endblock %}
+{% else %}
+{% block contentun %}
+    <h3>Você não está logado, <a href="{% url 'logout' %}">clique aqui</a> para logar</h3>
+{% endblock %}
+{% endif %}
