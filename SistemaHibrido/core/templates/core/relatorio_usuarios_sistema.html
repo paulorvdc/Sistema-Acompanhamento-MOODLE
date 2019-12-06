@@ -1,0 +1,54 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% if user.is_authenticated %}
+{% block contentauth %}
+
+{% if messages%}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }}" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<h4>Uso geral do sistema por parte dos usuários</h4>
+    <table class="table">
+        <tr>
+            <form method="POST">
+                {% csrf_token %}
+                <th>                 
+                    <label for="id_user">Usuário</label>              
+                    <input type="text" class="form-control" name="user" placeholder="Digite o usuário a ser pesquisado" id="id_user">
+                </th>
+                <th>
+                    <label for="id_acao">Ação</label>
+                    <input type="text" class="form-control" name="acao" placeholder="Digite a ação ser pesquisada" id="id_acao"> 
+                </th>
+                <th>
+                    <label for="botao">Data da ação</label>
+                    <br>
+                    <button id="botao" type="submit" class="btn btn-outline-primary"><i class="fa fa-search"></i></button>
+                </th>
+            </form>
+        </tr>
+    {% for user in final %}
+        <tr>
+            <td>{{ user.0 }}</td>
+            <td>{{ user.1 }}</td>
+            <td>{{ user.2 }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+    <script>
+        $(".alert").delay(4000).slideUp(200, function() {
+            $(this).alert('close');
+        });
+    </script>
+{% endblock %}
+{% else %}
+{% block contentun %}
+    <h3>Você não está logado, <a href="{% url 'logout' %}">clique aqui</a> para logar</h3>
+{% endblock %}
+{% endif %}
+
