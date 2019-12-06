@@ -13,7 +13,7 @@
     <table style="width: 100%">
         <tr>
             <th>
-                <h4>Seleção de disciplina e faixa de tempo para geração da previsão</h4>
+                <h4>Seleção de disciplina e faixa de tempo para geração de gráficos</h4>
                 <form method="POST" id="courseForm" target="blank_" data-categories-url="{% url 'ajax_load_categories' %}" data-courses-url="{% url 'ajax_load_courses' %}" novalidate>
                     {% csrf_token %}
                     <label for="id_parent">Escolha o tipo de curso</label>
